@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
-const  router = require('./routers/product.js');
 const { urlencoded } = require('body-parser');
+
+const productRouter = require('./routers/product.js');
+const categoryRouter = require('./routers/category.js');
+
 
 const app = express();
 const port = 5000;
@@ -16,7 +18,8 @@ app.get('/', (req, res) => {
   res.send("Hello World");
 });
 
-app.use('/', router);
+app.use('/', productRouter);
+app.use('/', categoryRouter);
 
 app.get('/test', (req, res) => {
   res.json(req.query.id);

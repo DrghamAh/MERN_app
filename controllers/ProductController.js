@@ -1,25 +1,23 @@
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-const connect = mysql.createConnection({
-  "database" : "mern_app",
-  "user" : 'root',
-  "host" : "localhost",
-  "password" : '',
-});
+const url = 'mongodb://127.0.0.1:27017/';
 
-connect.connect();
+const client = new MongoClient(url, { useNewUrlParser : true });
+client.connect();
+const db = client.db('crud_app');
+const collection = db.collection('products');
 
 exports.index = (req, res) => {
-  connect.query("SELECT * FROM products", (err, result) => {
+  collection.find().toArray((err, result) => {
     if (err) {
-      res.send(err.message);
+      res.send(err);
     } else {
       res.send(result);
     }
-  });
+  })
 }
 
 /**
@@ -29,20 +27,15 @@ exports.index = (req, res) => {
  * @param {} res 
  */
 exports.create = (req, res) => {
-  const sql = "INSERT INTO products (name, price, quantity) VALUES (?);";
-  const values = [
-    req.body.name,
-    req.body.price,
-    req.body.quantity
-  ];
-  connect.query(sql, [values], (err, reslut) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(reslut);
-    }
-  })
-  // send(req.body.name);
+  collection.insertOne({
+    name : req.body.name,
+    price : req.body.price,
+    quantity : req.body.quantity,
+    category_id : req.body.category_id,
+  }, (err, result) => {
+    if (err) res.send(err);
+    res.json(result);
+  });
 }
 
 /**
@@ -52,15 +45,9 @@ exports.create = (req, res) => {
  * @param {BigInteger} res 
  */
 exports.show = (req, res) => {
-  const sql = "SELECT * FROM products WHERE id=?";
-  const values = req.query.id;
-
-  connect.query(sql, [values], (err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
+  collection.findOne({id : req.query.id}, (err, result) => {
+    if (err) res.json(err);
+    else res.json(result);
   })
 }
 
@@ -71,20 +58,15 @@ exports.show = (req, res) => {
  * @param {} res
  */
 exports.update = (req, res) => {
-  const sql = 'UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?';
-  const values = [
-    req.body.name,
-    req.body.price,
-    req.body.quantity,
-    req.query.id,
-  ];
-  connect.query(sql, values, (err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
-  })
+  collection.findOneAndUpdate({id : req.query.id}, { $set : {
+    name : req.body.name,
+    price : req.body.price,
+    quantity : req.body.quantity,
+    category_id : req.body.category_id,
+  }}, (err, result) => {
+    if (err) res.json(err);
+    else res.json(result);
+  });
 }
 
 /**
@@ -93,13 +75,8 @@ exports.update = (req, res) => {
  * @param integer id
  */
 exports.destroy = (req, res) => {
-  const sql = "DELETE FROM products WHERE id = ?";
-  const value = req.body.id;
-  connect.query(sql, value, (err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
+  collection.findOneAndDelete({id : req.query.delete}, (err, result) => {
+    if (err) res.json(err);
+    else res.json(result);
   })
 }
