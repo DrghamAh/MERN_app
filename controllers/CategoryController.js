@@ -30,10 +30,10 @@ exports.index = (req, res) => {
  * @param res
  */
 exports.create = (req, res) => {
-  Category = new Category({
+  category = new Category({
     name : req.body.name,
   });
-  Category.save().then((response) => {
+  category.save().then((response) => {
     res.json(response);
   }).catch(err => {
     res.json(err);
