@@ -24,6 +24,7 @@ exports.create = (req, res) => {
     name : req.body.name,
     price : req.body.price,
     quantity : req.body.quantity,
+    category_id : req.body.category_id
   })
   product.save().then(result => {
     res.send(result);

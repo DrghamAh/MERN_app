@@ -6,10 +6,6 @@ mongoose.connect('mongodb://localhost:27017/crud_app');
 const Schema = mongoose.Schema
 
 const ProductSchema = new Schema({
-  key : {
-    type : Number,
-    required : true,
-  },
   name : {
     type : String,
   },
@@ -20,7 +16,7 @@ const ProductSchema = new Schema({
     type : Number,
   },
   category_id : {
-    type : Number,
+    type : String,
   }
 
 });
