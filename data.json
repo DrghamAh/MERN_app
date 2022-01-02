@@ -1,0 +1,16 @@
+{
+  "data" : [
+    {
+      "name" : "White Shoes",
+      "price" : 39.0,
+      "quantity" : 33,
+      "category_id" : 1
+    },
+    {
+      "name" : "Black Jacket",
+      "price" : 88.5,
+      "quantity" : 99,
+      "category_id" : 2
+    }
+  ]
+}

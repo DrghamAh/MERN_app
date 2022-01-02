@@ -1,22 +1,30 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Double, Int32 } = require('mongodb');
+const mongoose = require('mongoose');
 
-const sequelize = new Sequelize('mern_app', 'root', '', {
-  host : 'localhost',
-  database : 'mysql',
-});
+mongoose.connect('mongodb://localhost:27017/crud_app');
 
-const Product = sequelize.define('Product', {
-  id : {
-    type : DataTypes.UUID,
-    defaultValue : DataTypes.UUIDV4
+const Schema = mongoose.Schema
+
+const ProductSchema = new Schema({
+  key : {
+    type : Number,
+    required : true,
   },
   name : {
-    type : DataTypes.STRING,
+    type : String,
   },
   price : {
-    type : DataTypes.DOUBLE,
+    type : Number,
   },
   quantity : {
-    type : DataTypes.INTEGER
+    type : Number,
+  },
+  category_id : {
+    type : Number,
   }
-})
+
+});
+
+const Product = mongoose.model('Product', ProductSchema);
+
+module.exports = Product;

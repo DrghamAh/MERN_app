@@ -1,23 +1,16 @@
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const Product = require('../models/Product');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-const url = 'mongodb://127.0.0.1:27017/';
-
-const client = new MongoClient(url, { useNewUrlParser : true });
-client.connect();
-const db = client.db('crud_app');
-const collection = db.collection('products');
 
 exports.index = (req, res) => {
-  collection.find().toArray((err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
-  })
+  Product.find().then(result => {
+    res.json(result);
+  }).catch(err => {
+    res.json(err);
+  });
 }
 
 /**
@@ -27,14 +20,15 @@ exports.index = (req, res) => {
  * @param {} res 
  */
 exports.create = (req, res) => {
-  collection.insertOne({
+  var product = new Product({
     name : req.body.name,
     price : req.body.price,
     quantity : req.body.quantity,
-    category_id : req.body.category_id,
-  }, (err, result) => {
-    if (err) res.send(err);
-    res.json(result);
+  })
+  product.save().then(result => {
+    res.send(result);
+  }).catch(err => {
+    res.send(err);
   });
 }
 
@@ -45,10 +39,11 @@ exports.create = (req, res) => {
  * @param {BigInteger} res 
  */
 exports.show = (req, res) => {
-  collection.findOne({id : req.query.id}, (err, result) => {
-    if (err) res.json(err);
-    else res.json(result);
-  })
+  Product.findById(req.body.id).then(result => {
+    res.json(result);
+  }).catch(err => {
+    res.json(err);
+  });
 }
 
 /**
@@ -58,14 +53,10 @@ exports.show = (req, res) => {
  * @param {} res
  */
 exports.update = (req, res) => {
-  collection.findOneAndUpdate({id : req.query.id}, { $set : {
-    name : req.body.name,
-    price : req.body.price,
-    quantity : req.body.quantity,
-    category_id : req.body.category_id,
-  }}, (err, result) => {
-    if (err) res.json(err);
-    else res.json(result);
+  Product.findByIdAndDelete(req.query.id).then(resurt => {
+    res.json(result);
+  }).catch(err => {
+    res.json(err);
   });
 }
 
@@ -75,8 +66,8 @@ exports.update = (req, res) => {
  * @param integer id
  */
 exports.destroy = (req, res) => {
-  collection.findOneAndDelete({id : req.query.delete}, (err, result) => {
+  Product.findByIdAndDelete(req.query.id, (err, doc, result) => {
     if (err) res.json(err);
-    else res.json(result);
+    res.json(result);
   })
 }

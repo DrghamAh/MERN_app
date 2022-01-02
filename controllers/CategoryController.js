@@ -1,15 +1,10 @@
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const Category = require('../models/Category');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-const url = 'mongodb://127.0.0.1:27017/';
 
-const client = new MongoClient(url, { useNewUrlParser : true });
-client.connect();
-
-const db = client.db('crud_app');
-const collection = db.collection('categories');
 
 /**
  * @method GET
@@ -20,9 +15,10 @@ const collection = db.collection('categories');
  * @param res
  */
 exports.index = (req, res) => {
-  collection.find().toArray((err, result) => {
-    if (err) res.send(err);
-    res.send(result);
+  Category.find().then(response => {
+    res.json(response);
+  }).catch(err => {
+    res.json(err);
   });
 }
 
@@ -34,16 +30,15 @@ exports.index = (req, res) => {
  * @param res
  */
 exports.create = (req, res) => {
-  collection.insertOne({
-    id : req.body.id,
+  Category = new Category({
     name : req.body.name,
-  }, (err, result) => {
-    if (err) {
-      res.json(err);
-    } else {
-      res.json(result);
-    }
   });
+  Category.save().then((response) => {
+    res.json(response);
+  }).catch(err => {
+    res.json(err);
+  });
+
 }
 
 /**
@@ -54,12 +49,10 @@ exports.create = (req, res) => {
  * @param res
  */
 exports.show = (req, res) => {
-  collection.findOne({ id : req.query.id}, (err, result) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(result);
-    }
+  Category.findById(req.params.id).then(result => {
+    res.json(response);
+  }).catch(err => {
+    res.json(err);
   });
 }
 
@@ -70,15 +63,11 @@ exports.show = (req, res) => {
  * @param {*} res 
  */
 exports.update = (req, res) => {
-  collection.updateOne({id : req.query.id},{ $set : {
-    id : req.query.id,
-    name : req.body.name,
-  }}, (err, result) => {
-    if (err) {
-      res.json(err);
-    } else {
-      res.json(result);
-    }
+  Category.findByIdAndUpdate(req.query.id, {
+    name : req.body.name
+  }, (err, doc, result) => {
+    if (err) res.json(err);
+    res.json(result);
   });
 }
 
@@ -89,8 +78,8 @@ exports.update = (req, res) => {
  * @param id 
  */
 exports.destroy = (req, res) => {
-  collection.deleteOne({ id : req.query.id }, (err, result) => {
-    if (err) res.send(err);
-    res.send(result);
-  })
+  Category.findByIdAndDelete(req.query.id, (err, doc, result) => {
+    if (err) res.json(err);
+    res.json(result);
+  });
 }
