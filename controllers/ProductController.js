@@ -1,6 +1,8 @@
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const Product = require('../models/Product');
+const ProductSchema = require('../validation/ProductValidation');
+const Category = require('../models/Category');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -20,17 +22,28 @@ exports.index = (req, res) => {
  * @param {} res 
  */
 exports.create = (req, res) => {
-  var product = new Product({
+  const {error, value} = ProductSchema.validate({
     name : req.body.name,
     price : req.body.price,
     quantity : req.body.quantity,
-    category_id : req.body.category_id
-  })
-  product.save().then(result => {
-    res.send(result);
-  }).catch(err => {
-    res.send(err);
+    category_id : req.body.category_id,
   });
+
+  if (!error) {
+    var product = new Product({
+      name : value.name,
+      price : value.price,
+      quantity : value.quantity,
+      category_id : value.category_id
+    });
+    product.save().then(result => {
+      res.send(result);
+    }).catch(err => {
+      res.send(err);
+    });
+  } else {
+    res.json(error.details);
+  }
 }
 
 /**
@@ -40,10 +53,10 @@ exports.create = (req, res) => {
  * @param {BigInteger} res 
  */
 exports.show = (req, res) => {
-  Product.findById(req.body.id).then(result => {
-    res.json(result);
+  Product.findById(req.params.id).then(response => {
+    res.json(response);
   }).catch(err => {
-    res.json(err);
+    res.json(500, {err : err});
   });
 }
 
@@ -54,10 +67,14 @@ exports.show = (req, res) => {
  * @param {} res
  */
 exports.update = (req, res) => {
-  Product.findByIdAndDelete(req.query.id).then(resurt => {
+  Product.findByIdAndUpdate(req.params.id, {
+    name : req.body.name,
+    price : req.body.price,
+    quantity : req.body.quantity,
+    category_id : req.body.category_id,
+  }, (err, doc, result) => {
+    if (err) res.json(err);
     res.json(result);
-  }).catch(err => {
-    res.json(err);
   });
 }
 
@@ -67,7 +84,7 @@ exports.update = (req, res) => {
  * @param integer id
  */
 exports.destroy = (req, res) => {
-  Product.findByIdAndDelete(req.query.id, (err, doc, result) => {
+  Product.findByIdAndDelete(req.body.id, (err, doc, result) => {
     if (err) res.json(err);
     res.json(result);
   })

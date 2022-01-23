@@ -7,10 +7,10 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 const router = express.Router();
 
 router.get('/products/', index);
-router.get('/products/show', urlencodedParser, show);
-router.post('/products/create', urlencodedParser, create);
-router.get('/products/delete', urlencodedParser, destroy);
-router.post('/products/update', urlencodedParser, update);
+router.get('/products/:id', urlencodedParser, show);
+router.post('/products', urlencodedParser, create);
+router.delete('/products', urlencodedParser, destroy);
+router.put('/products/:id', urlencodedParser, update);
 
 
 module.exports = router;

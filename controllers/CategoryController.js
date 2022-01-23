@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const Category = require('../models/Category');
+const CategorySchema = require('../validation/CategoryValidation');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -30,14 +31,22 @@ exports.index = (req, res) => {
  * @param res
  */
 exports.create = (req, res) => {
-  category = new Category({
+  const {error, value} = CategorySchema.validate({
     name : req.body.name,
   });
-  category.save().then((response) => {
-    res.json(response);
-  }).catch(err => {
-    res.json(err);
-  });
+
+  if (!error) {
+    const category = new Category({
+      name : value.name,
+    });
+    category.save().then((response) => {
+      res.status(501).json({data : response});
+    }).catch(err => {
+      res.status(400).json({err : err});
+    });
+  } else {
+    res.json(error.details);
+  }
 
 }
 
@@ -49,26 +58,34 @@ exports.create = (req, res) => {
  * @param res
  */
 exports.show = (req, res) => {
-  Category.findById(req.params.id).then(result => {
-    res.json(response);
+  Category.findById(req.params.id).then(respone => {
+    res.json(respone);
   }).catch(err => {
-    res.json(err);
-  });
+    res.status(500).json({err : err});
+  })
 }
 
 /**
- * @method POST
+ * @method PUT
  * @description method to update category
  * @param {id, body} req 
  * @param {*} res 
  */
 exports.update = (req, res) => {
-  Category.findByIdAndUpdate(req.query.id, {
-    name : req.body.name
-  }, (err, doc, result) => {
-    if (err) res.json(err);
-    res.json(result);
-  });
+  const {error, value} = CategorySchema.validate({
+    name : req.body.name,
+  })
+
+  if (!error) {
+    Category.findByIdAndUpdate(req.params.id, {
+      name : value.name,
+    }, (err, doc, result) => {
+      if (err) res.json(err);
+      res.json(result);
+    });
+  } else {
+    res.json(error.details);
+  }
 }
 
 /**
@@ -78,7 +95,7 @@ exports.update = (req, res) => {
  * @param id 
  */
 exports.destroy = (req, res) => {
-  Category.findByIdAndDelete(req.query.id, (err, doc, result) => {
+  Category.findByIdAndDelete(req.body.id, (err, doc, result) => {
     if (err) res.json(err);
     res.json(result);
   });
