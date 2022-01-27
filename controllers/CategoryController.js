@@ -3,9 +3,6 @@ const MongoClient = require('mongodb').MongoClient;
 const Category = require('../models/Category');
 const CategorySchema = require('../validation/CategoryValidation');
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
-
 
 /**
  * @method GET
@@ -15,12 +12,13 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
  * @param req 
  * @param res
  */
-exports.index = (req, res) => {
-  Category.find().then(response => {
-    res.json(response);
-  }).catch(err => {
-    res.json(err);
-  });
+exports.index = async (req, res) => {
+  try {
+    const response = await Category.find();
+    res.status(201).json(response);
+  } catch (error) {
+    res.status(501).json(error);
+  }
 }
 
 /**
@@ -40,12 +38,12 @@ exports.create = (req, res) => {
       name : value.name,
     });
     category.save().then((response) => {
-      res.status(501).json({data : response});
+      res.status(201).json({data : response});
     }).catch(err => {
-      res.status(400).json({err : err});
+      res.status(501).json({err : err});
     });
   } else {
-    res.json(error.details);
+    res.status(501).json(error.details);
   }
 
 }
@@ -57,12 +55,13 @@ exports.create = (req, res) => {
  * @param {id} req
  * @param res
  */
-exports.show = (req, res) => {
-  Category.findById(req.params.id).then(respone => {
-    res.json(respone);
-  }).catch(err => {
-    res.status(500).json({err : err});
-  })
+exports.show = async (req, res) => {
+  try {
+    const response = await Category.findById(req.params.id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(501).json({err : error});
+  }
 }
 
 /**
@@ -71,20 +70,22 @@ exports.show = (req, res) => {
  * @param {id, body} req 
  * @param {*} res 
  */
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const {error, value} = CategorySchema.validate({
     name : req.body.name,
   })
 
   if (!error) {
-    Category.findByIdAndUpdate(req.params.id, {
-      name : value.name,
-    }, (err, doc, result) => {
-      if (err) res.json(err);
-      res.json(result);
-    });
+    try {
+      const response = await Category.findByIdAndUpdate(req.params.id, {
+        name : value.name,
+      });
+      res.status(201).json(response);
+    } catch (err) {
+      res.status(501).json(err);
+    }
   } else {
-    res.json(error.details);
+    res.status(400).json(error.details);
   }
 }
 
@@ -94,9 +95,11 @@ exports.update = (req, res) => {
  * 
  * @param id 
  */
-exports.destroy = (req, res) => {
-  Category.findByIdAndDelete(req.body.id, (err, doc, result) => {
-    if (err) res.json(err);
-    res.json(result);
-  });
+exports.destroy = async (req, res) => {
+  try {
+    const response = await Category.findByIdAndDelete(req.body.id);
+    res.status(202).json(response)
+  } catch (error) {
+    res.status(501).json(error)
+  }
 }

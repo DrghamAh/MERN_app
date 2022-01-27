@@ -7,12 +7,13 @@ const Category = require('../models/Category');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 
-exports.index = (req, res) => {
-  Product.find().then(result => {
-    res.json(result);
-  }).catch(err => {
-    res.json(err);
-  });
+exports.index = async (req, res) => {
+  try {
+    const response = await Product.find();
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(501).json(err);
+  }
 }
 
 /**
@@ -21,7 +22,7 @@ exports.index = (req, res) => {
  * @param {Body} req 
  * @param {} res 
  */
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const {error, value} = ProductSchema.validate({
     name : req.body.name,
     price : req.body.price,
@@ -36,13 +37,14 @@ exports.create = (req, res) => {
       quantity : value.quantity,
       category_id : value.category_id
     });
-    product.save().then(result => {
-      res.send(result);
-    }).catch(err => {
-      res.send(err);
-    });
+    try {
+      const response = await product.save();
+      res.status(201).json(response)
+    } catch (err) {
+      res.status(501).json(err)
+    }
   } else {
-    res.json(error.details);
+    res.status(400).json(error.details);
   }
 }
 
@@ -52,12 +54,13 @@ exports.create = (req, res) => {
  * @param {id} req 
  * @param {BigInteger} res 
  */
-exports.show = (req, res) => {
-  Product.findById(req.params.id).then(response => {
-    res.json(response);
-  }).catch(err => {
-    res.json(500, {err : err});
-  });
+exports.show = async (req, res) => {
+  try {
+    const response = await Product.findById(req.params.id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.json(501, {err : err});
+  }
 }
 
 /**
@@ -73,8 +76,8 @@ exports.update = (req, res) => {
     quantity : req.body.quantity,
     category_id : req.body.category_id,
   }, (err, doc, result) => {
-    if (err) res.json(err);
-    res.json(result);
+    if (err) res.status(501).json(err);
+    res.status(202).json(result);
   });
 }
 
@@ -85,7 +88,7 @@ exports.update = (req, res) => {
  */
 exports.destroy = (req, res) => {
   Product.findByIdAndDelete(req.body.id, (err, doc, result) => {
-    if (err) res.json(err);
-    res.json(result);
+    if (err) res.status(501).json(err);
+    res.status(202).json(result);
   })
 }

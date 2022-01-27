@@ -7,7 +7,7 @@ const UserSchema = require('../validation/UserValidation');
  */
 module.exports.index = (req, res) => {
   User.find().then(response => {
-    res.json(response);
+    res.status(501).json(response);
   }).catch(err => {
     res.state(200).json(err);
   });
@@ -21,9 +21,9 @@ module.exports.index = (req, res) => {
  */
 module.exports.show = (req, res) => {
   User.findById(req.params.id).then(response => {
-    res.json(response);
+    res.status(200).json(response);
   }).catch(err => {
-    res.json(err);
+    res.status(501).json(err);
   });
 }
 
@@ -48,13 +48,13 @@ module.exports.create = (req, res) => {
       password : value.password,
       phone : value.phone,
     }).then(response => {
-      res.json(response);
+      res.status(201).json(response);
     }).catch(err => {
-      res.json(err);
+      res.status(501).json(err);
     });
     res.json(value)
   } else {
-    res.json(error.details);
+    res.status(501).json(error.details);
   }
 
 }
@@ -72,16 +72,16 @@ module.exports.update = (req, res) => {
     password : req.body.password,
     phone : req.body.phone,
   }).then(response => {
-    res.json(response);
+    res.status(202).json(response);
   }).catch(err => {
-    res.json(err);
+    res.status(501).json(err);
   });
 }
 
 module.exports.destroy = (req, res) => {
   User.findByIdAndDelete(req.params.id).then(response => {
-    res.json(response);
+    res.status(202).json(response);
   }).catch(err => {
-    res.json(err);
+    res.status(501).json(err);
   });
 }
