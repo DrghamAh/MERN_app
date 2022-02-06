@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/products/', index);
 router.get('/products/:id', urlencodedParser, show);
 router.post('/products', urlencodedParser, create);
-router.delete('/products', urlencodedParser, destroy);
+router.delete('/products/:id', urlencodedParser, destroy);
 router.put('/products/:id', urlencodedParser, update);
 
 

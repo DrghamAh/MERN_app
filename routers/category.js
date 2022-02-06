@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/categories', index);
 router.get('/categories/:id', urlencodedParser, show);
 router.post('/categories', create);
-router.delete('/categories', destroy);
+router.delete('/categories/:id', destroy);
 router.put('/categories/:id', update);
 
 module.exports = router;

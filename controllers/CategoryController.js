@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const Category = require('../models/Category');
+const Product = require('../models/Product');
 const CategorySchema = require('../validation/CategoryValidation');
 
 
@@ -15,7 +16,7 @@ const CategorySchema = require('../validation/CategoryValidation');
 exports.index = async (req, res) => {
   try {
     const response = await Category.find();
-    res.status(201).json(response);
+    res.status(200).json(response);
   } catch (error) {
     res.status(501).json(error);
   }
@@ -28,7 +29,7 @@ exports.index = async (req, res) => {
  * @param req
  * @param res
  */
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const {error, value} = CategorySchema.validate({
     name : req.body.name,
   });
@@ -37,13 +38,14 @@ exports.create = (req, res) => {
     const category = new Category({
       name : value.name,
     });
-    category.save().then((response) => {
-      res.status(201).json({data : response});
-    }).catch(err => {
-      res.status(501).json({err : err});
-    });
+    try {
+      const response = await category.save();
+      res.status(201).json(response);
+    } catch (err) {
+      res.status(501).json(err);
+    }
   } else {
-    res.status(501).json(error.details);
+    res.status(400).json(error.details);
   }
 
 }
@@ -97,8 +99,13 @@ exports.update = async (req, res) => {
  */
 exports.destroy = async (req, res) => {
   try {
-    const response = await Category.findByIdAndDelete(req.body.id);
-    res.status(202).json(response)
+    const response = await Category.findByIdAndDelete(req.params.id);
+    try {
+      const response = await Product.deleteMany({category_id : req.params.id});
+    } catch (error) {
+      res.status(501).json(error);
+    }
+    res.status(202).json(response);
   } catch (error) {
     res.status(501).json(error)
   }

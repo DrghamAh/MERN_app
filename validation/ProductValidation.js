@@ -7,11 +7,16 @@ Category.find().select('_id').then(response => {
 });
 
 
-const ProductSchema = Joi.object().keys({
+module.exports.ProductSchema = Joi.object().keys({
   name : Joi.string().required(),
   price : Joi.number().required(),
   quantity : Joi.number().required(),
   category_id : Joi.string().required(),
 });
 
-module.exports = ProductSchema;
+module.exports.checkCategory = (id) => {
+  const result = Category.countDocuments({_id : id});
+  if (result) {
+    return true;
+  } else return false;
+}
