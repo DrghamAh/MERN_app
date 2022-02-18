@@ -1,6 +1,7 @@
-const Joi = require('joi');
 const User = require('../models/User');
+const asyncHandler = require('express-async-handler');
 const UserSchema = require('../validation/UserValidation');
+
 
 /**
  * Method to get all the users
@@ -41,7 +42,7 @@ module.exports.create = async (req, res) => {
     email : req.body.email,
     password : req.body.password,
     phone : req.body.phone,
-  });
+  }, {abortEarly : false});
 
   if (!error) {
     try {

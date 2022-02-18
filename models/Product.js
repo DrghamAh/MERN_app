@@ -14,6 +14,14 @@ const ProductSchema = new Schema({
   quantity : {
     type : Number,
   },
+  rating : {
+    type : Number,
+    required : true,
+    default : 0.0,
+  },
+  image : {
+    type : String,
+  },
   category_id : {
     type : String,
   }

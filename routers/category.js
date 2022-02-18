@@ -2,15 +2,14 @@ const express = require('express');
 const {index, create, destroy, show, update} = require('../controllers/CategoryController');
 const bodyParser = require('body-parser');
 const { urlencoded } = require('body-parser');
-
-const urlencodedParser = bodyParser.urlencoded({extended : false});
+const isAuthenticated = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 router.get('/categories', index);
-router.get('/categories/:id', urlencodedParser, show);
-router.post('/categories', create);
-router.delete('/categories/:id', destroy);
-router.put('/categories/:id', update);
+router.get('/categories/:id', show);
+router.post('/categories', isAuthenticated, create);
+router.delete('/categories/:id', isAuthenticated, destroy);
+router.put('/categories/:id', isAuthenticated, update);
 
 module.exports = router;

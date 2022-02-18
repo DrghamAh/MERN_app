@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bycrypt = require('bcryptjs');
 
 const userSchema = mongoose.Schema({
   name : {
@@ -8,6 +9,7 @@ const userSchema = mongoose.Schema({
   email : {
     type : String,
     require : true,
+    unique : true,
   },
   password : {
     type : String,
@@ -18,7 +20,16 @@ const userSchema = mongoose.Schema({
     type : String,
     require : true,
   }
-});
+}, {timestaps : true});
+
+// userSchema.pre("save", async (next) => {
+//   if (!this.isModified('password')) {
+//     next();
+//   }
+
+//   const salt = bycrypt.genSalt(10);
+//   this.password = bycrypt.hash(this.password, salt);
+// })
 
 const User = mongoose.model('User', userSchema);
 

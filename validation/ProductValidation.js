@@ -11,6 +11,7 @@ module.exports.ProductSchema = Joi.object().keys({
   name : Joi.string().required(),
   price : Joi.number().required(),
   quantity : Joi.number().required(),
+  rating : Joi.number().required().default(0.0),
   category_id : Joi.string().required(),
 });
 

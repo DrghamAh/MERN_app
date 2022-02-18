@@ -14,8 +14,12 @@ const orderSchema = mongoose.Schema({
     required : true,
     default : 1,
   },
-  create_at : Date,
-})
+  subtotal : {
+    type : Number,
+    required : true,
+    default : 0
+  }
+}, {timestaps : true})
 
 const Order = mongoose.model('Order', orderSchema);
 
