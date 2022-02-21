@@ -11,21 +11,8 @@ exports.index = (req, res) => {
 }
 
 exports.create = (req, res) => {
-
   if (!req.file) {
-    res.status(400).json({error : "you did not upload a file"});
+    res.status(501).json('there is no image');
   }
-  
-  try {
-    const response = Image.create({
-      name : req.body.name,
-    });
-    if (response) {
-      res.status(201).json(response);
-    } else {
-      res.status(400).json(response);
-    }
-  } catch (error) {
-    res.status(501).json(error);
-  }
+  res.status(200).json({name : req.file});
 }

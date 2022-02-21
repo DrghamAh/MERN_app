@@ -4,19 +4,7 @@ const multer = require('multer');
 
 const ImageRouter = express.Router();
 
-
-const storage = multer.diskStorage({
-  destination : (req, file, callBack) => {
-    callBack(null, './public/images');
-  },
-  filename : (req, file, callBack) => {
-    callBack(null, file.fieldname + '-' + Date.now());
-  }
-})
-
-const upload = multer({
-  storage : storage,
-});
+const upload = multer({dest : '../client/public/uploads'});
 
 ImageRouter.get('/images', index);
 ImageRouter.post('/images', upload.single('image'), create);

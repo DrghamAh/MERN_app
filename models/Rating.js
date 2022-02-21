@@ -15,6 +15,10 @@ const RatingSchema = mongoose.Schema({
     type : Number,
     required : true,
     default : 0.0,
+  },
+  message : {
+    type : String,
+    default : '',
   }
 });
 
