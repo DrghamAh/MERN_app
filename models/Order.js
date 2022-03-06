@@ -1,23 +1,19 @@
 const mongoose = require('mongoose');
 
+mongoose.connect('mongodb://localhost:27017/crud_app');
+
 const orderSchema = mongoose.Schema({
-  product_id : {
-    type : String,
-    required : true,
-  },
   user_id : {
     type : String,
     required : true,
   },
-  quantity : {
-    type : Number,
-    required : true,
-    default : 1,
+  status : {
+    type : String,
+    default : "pending",
   },
-  subtotal : {
-    type : Number,
-    required : true,
-    default : 0
+  payment : {
+    type : String,
+    default : 'due',
   }
 }, {timestaps : true})
 

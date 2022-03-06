@@ -35,14 +35,30 @@ exports.create = async (req, res) => {
   });
 
   if (!error) {
-    const category = new Category({
-      name : value.name,
-    });
-    try {
-      const response = await category.save();
-      res.status(201).json(response);
-    } catch (err) {
-      res.status(501).json(err);
+    if (!req.file) {
+      const category = new Category({
+        name : value.name,
+      });
+      try {
+        const response = await category.save();
+        res.status(201).json(response);
+      } catch (err) {
+        res.status(501).json(err);
+      }
+    } else {
+      try {
+        const response = await Category.create({
+          name : value.name,
+          image : req.file.filename,
+        });
+        if (response) {
+          res.status(201).json(response);
+        } else {
+          res.status(400).json({error : 'Something went wrong'});
+        }
+      } catch (error) {
+        res.status(501).json(error);
+      }
     }
   } else {
     res.status(400).json(error.details);

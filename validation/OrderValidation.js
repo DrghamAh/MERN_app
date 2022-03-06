@@ -1,10 +1,13 @@
 const Joi = require('joi');
 
 const OrderSchema = Joi.object().keys({
-  product_id : Joi.string().required(),
   user_id : Joi.string().required(),
-  quantity : Joi.number().required().default(1),
-  subtotal : Joi.number().required().default(0),
+  data : Joi.array().required(),
 });
 
-module.exports = OrderSchema;
+const Product_OrderSchema = Joi.object().keys({
+  product_id : Joi.string().required(),
+  quantity : Joi.number().default(1),
+})
+
+module.exports = { OrderSchema, Product_OrderSchema };

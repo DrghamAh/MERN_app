@@ -29,18 +29,31 @@ exports.create = async (req, res) => {
     var result = await Category.findById(req.body.category_id);
     if (result) {
       if (!error) {
-        var product = new Product({
-          name : value.name,
-          price : value.price,
-          quantity : value.quantity,
-          category_id : value.category_id
-        });
-        try {
-          const response = await product.save();
-          res.status(201).json(response)
-        } catch (err) {
-          res.status(501).json(err)
+        if (!req.file) {
+          var product = new Product({
+            name : value.name,
+            price : value.price,
+            quantity : value.quantity,
+            category_id : value.category_id
+          });
+          try {
+            const response = await product.save();
+            res.status(201).json(response)
+          } catch (err) {
+            res.status(501).json(err)
+          }
+        } else {
+          var response = await Product.create({
+            name : value.name,
+            price : value.price,
+            quantity : value.quantity,
+            category_id : value.category_id,
+            image : req.file.filename,
+          });
+          if (response) res.status(201).json(response);
+          else res.status(400).json({error : 'Something went wrong'});
         }
+        
       } else {
         res.status(400).json(error);
       }

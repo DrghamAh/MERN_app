@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bycrypt = require('bcryptjs');
 
+mongoose.connect("mongodb://localhost:27017/crud_app")
+
 const userSchema = mongoose.Schema({
   name : {
     type : String,
@@ -19,6 +21,10 @@ const userSchema = mongoose.Schema({
   phone : {
     type : String,
     require : true,
+  },
+  role : {
+    type : Number,
+    default : 1,
   }
 }, {timestaps : true});
 

@@ -17,16 +17,19 @@ const register = asyncHandler(async (req, res) => {
     email : email,
     password : bcrypt.hashSync(String(password)),
     phone : phone,
+    role : 1,
   })
 
   if (response) {
 
-    res.status(201).json({
-      _id : response._id,
-      name : response.name,
-      email : response.email,
-      phone : response.phone,
-      token : generateToken(response._id),
+    res.status(201).json({  
+      token : generateToken({
+        _id : response._id,
+        name : response.name,
+        email : response.email,
+        phone : response.phone,
+        role : response.role,
+      }, 'usersecretkey'),
     });
   } else {
     res.status(501).json({error : 'Something went wrong'});
@@ -40,11 +43,13 @@ const login = asyncHandler(async (req, res) => {
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       res.status(200).json({
-        _id : user._id,
-        name : user.name,
-        email : user.email,
-        phone : user.phone,
-        token : generateToken(user._id),
+        token : generateToken({
+          _id : user._id,
+          name : user.name,
+          email : user.email,
+          phone : user.phone,
+          role : user.role,
+        }, user.role == 1 ? 'usersecretkey' : 'adminsecretkey'),
       });
     } else {
       res.status(400).json({

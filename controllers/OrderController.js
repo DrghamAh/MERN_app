@@ -1,7 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
-const OrderSchema = require('../validation/OrderValidation');
+const { OrderSchema, Product_OrderSchema } = require('../validation/OrderValidation');
 
 /**
  * method to get all orders
@@ -23,38 +23,64 @@ module.exports.index = async (req, res) => {
  * Method to create new order
  * @method POST
  * 
- * @param {*} req 
+ * @param {user_id, Products Array} req 
  * @param {*} res 
  */
 module.exports.create = async (req, res) => {
-  const {error, value} = OrderSchema.validate({
-    product_id : req.body.product_id,
-    user_id : req.body.user_id,
-    quantity : req.body.quantity,
-    subtotal : req.body.subtotal
-  })
-  
-  if (!error) {
-    try {
-      const resultOne = await Product.findById(value.product_id);
-      const resultTwo = await User.findById(value.user_id);
-      if (resultOne && resultTwo) {
-        const response = await Order.create({
-          product_id : value.product_id,
-          user_id : value.user_id,
-          quantity : value.quantity,
-          subtotal : value.subtotal
-        });
-        res.status(201).json(response);
-      } else {
-        res.status(400).json({error : 'Product or user may not exist'});
-      }
-    } catch (error) {
-      res.status(501).json(error);
-    }
+  let products = [], errors = [];
 
-  } else {
-    res.status(400).json(error.details);
+  const {error, value} = OrderSchema.validate({
+    user_id : req.body.user_id,
+    data : req.body.data,
+  });
+
+  if (error) {
+    res.status(400).json(error);
+  }
+
+  try {
+    const response = await User.findById(req.body.user_id);
+    if (response) {
+
+    }
+    res.status(400).json({error : 'User may not exist'});
+  } catch (error) {
+    
+  }
+
+
+
+  req.body.data.forEach(product => {
+    const {error, value} = Product_OrderSchema.validate({
+      product_id : product._id,
+      quantity : product.quantity,
+    }, {abortEarly : false});
+    if (error) {
+      errors.push(error);
+    } else {
+      products.push(value);
+    }
+  });
+
+  if (errors[0]) {
+    res.json({errors : errors});
+  }
+  
+  try {
+    products.forEach(async (product) => {
+      const response = await Product.findById(product._id);
+      if (response) {
+        errors.push(`The Product with id of ${product._id} does not exist`);
+      }
+    });
+    if (!errors[0]) {
+      res.status(200).json({product : products});
+    }
+    res.status(400).json({errors : errors});
+  } catch (error) {
+    
   }
 }
+
+
 

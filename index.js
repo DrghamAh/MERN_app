@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { urlencoded } = require('body-parser');
 const isAuthenticated = require('./middlewares/authMiddleware');
 // const fileUpload = require('express-fileupload');
 
@@ -14,6 +13,7 @@ const ImageRouter = require('./routers/image.route.js');
 
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware.js');
 const RatingRouter = require('./routers/rating');
+const adminRouter = require('./routers/admin.router');
 
 
 const app = express();
@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
   res.send("Hello World");
 });
 
+app.use('/', adminRouter);
 app.use('/', authRouter);
 app.use('/', productRouter);
 app.use('/', categoryRouter);
@@ -40,7 +41,11 @@ app.use('/', ImageRouter);
 app.use('/', RatingRouter);
 
 app.get('/test', (req, res) => {
-  res.json(req.query.id);
+  res.json(req);
+})
+
+app.post('/test', (req, res) => {
+  res.json(req.body.data);
 })
 
 app.listen(port, () => {
