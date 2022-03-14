@@ -4,7 +4,8 @@ const UserSchema = require('../validation/UserValidation');
 
 
 /**
- * Method to get all the users
+ * @description Method to get all the users
+ * @method GET
  */
 module.exports.index = async (req, res) => {
   try {
@@ -16,7 +17,8 @@ module.exports.index = async (req, res) => {
 }
 
 /**
- * Method to get single user
+ * @description Method to get single user
+ * @method GET
  * 
  * @param {params, id} req 
  * @param {*} res 
@@ -31,7 +33,8 @@ module.exports.show = async (req, res) => {
 }
 
 /**
- * Method to create new user
+ * @description Method to create new user
+ * @method POST
  * 
  * @param {body} req 
  * @param {*} res 
@@ -63,7 +66,8 @@ module.exports.create = async (req, res) => {
 }
 
 /**
- * Method to update single user
+ * @description Method to update single user
+ * @method PUT
  * 
  * @param {id, body} req 
  * @param {*} res 
@@ -93,6 +97,13 @@ module.exports.update = async (req, res) => {
   }
 }
 
+/**
+ * @description Method to delete user
+ * @method DELETE
+ *  
+ * @param {*} req 
+ * @param {*} res 
+ */
 module.exports.destroy = async (req, res) => {
   try {
     const response = await User.findByIdAndDelete(req.params.id);
@@ -101,3 +112,75 @@ module.exports.destroy = async (req, res) => {
     res.status(501).json(error);
   }
 }
+
+/**
+ * @method GET
+ * @description Method to get all user favorite Products
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+module.exports.favorites = async (req, res) => {
+  try {
+    const response = await User.findById(req.params.id);
+    if (response) {
+      res.status(200).json(response.favorites);
+    } else {
+      res.status(400).json({error : "Something went wrong"});
+    }
+  } catch (error) {
+    res.status(501).json(error)
+  }
+}
+
+/**
+ * @method POST
+ * @description Method to add Favorite product to the user
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+module.exports.addFavorite = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    user.favorites.push(req.body.product_id);
+    const result = user.save();
+
+    if (result) {
+      res.status(201).json(result);
+    } else {
+      res.status(400).json({error : 'Something went wrong'});
+    }
+  } catch (error) {
+    res.status(501).json(error);
+  }
+}
+
+/**
+ * @method DELETE
+ * @description Method to delete Favorite Product
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+module.exports.deleteFavorite = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      const response = await User.findByIdAndUpdate(req.params.id, {
+        favorites : user.favorites.filter(({product_id}) => product_id === req.params.product_id),
+      });
+
+      if (response) {
+        res.status(200).json(response);
+      } else {
+        res.status(400).json({error : 'Something went wrong'});
+      }
+    } else {
+      res.status(400).json({error : "User may not exist"});
+    }
+  } catch (error) {
+    res.status(501).json(error);
+  }
+}
+

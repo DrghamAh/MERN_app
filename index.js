@@ -10,6 +10,7 @@ const userRouter = require('./routers/user');
 const orderRouter = require('./routers/order');
 const authRouter = require('./routers/auth');
 const ImageRouter = require('./routers/image.route.js');
+const favoritesRouter = require('./routers/favorites.router');
 
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware.js');
 const RatingRouter = require('./routers/rating');
@@ -39,6 +40,7 @@ app.use('/', userRouter);
 app.use('/', orderRouter);
 app.use('/', ImageRouter);
 app.use('/', RatingRouter);
+app.use('/', favoritesRouter)
 
 app.get('/test', (req, res) => {
   res.json(req);

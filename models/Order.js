@@ -14,7 +14,26 @@ const orderSchema = mongoose.Schema({
   payment : {
     type : String,
     default : 'due',
-  }
+  },
+  date : {
+    type : Date,
+    default : Date.now(),
+  },
+  products : [
+    {
+      _id : {
+        type : mongoose.Schema.Types.ObjectId,
+      },
+      id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Product',
+      },
+      quantity : {
+        type : Number,
+        default : 1
+      },
+    }
+  ],
 }, {timestaps : true})
 
 const Order = mongoose.model('Order', orderSchema);

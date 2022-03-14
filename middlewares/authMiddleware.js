@@ -2,9 +2,8 @@ const jwt = require('jsonwebtoken');
 
 const isAuthenticated = async (req, res, next) => {
   try {
-    const user = await jwt.verify(req.headers.token, "secretkey");
-    const admin = await jwt.verify(req.headers.token, 'adminsecretkey');
-    if (user || admin) {
+    const user = jwt.verify(req.headers.token, "usersecretkey");
+    if (user) {
       next()
     } else {
       res.status(403).json({error : 'you are not logged in'});
@@ -16,11 +15,14 @@ const isAuthenticated = async (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   try {
-    const data = await jwt.verify(req.headers.token, 'adminsecretkey');
-    if (data) {
+    const data = jwt.decode(req.headers.token)
+    if (data.role === 2) {
       next();
     } else {
-      res.status(403).json({error : 'You do not have permission to get this route'});
+      res.status(403).json({error : {
+        name : 'PermissionError',
+        message : 'You have to be admin to get this route'
+      }});
     }
   } catch (error) {
     res.status(501).json(error);

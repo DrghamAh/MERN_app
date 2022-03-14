@@ -2,7 +2,10 @@ const Joi = require('joi');
 
 const OrderSchema = Joi.object().keys({
   user_id : Joi.string().required(),
-  data : Joi.array().required(),
+  data : Joi.array().items({
+    product_id : Joi.string().required(),
+    quantity : Joi.number().required(),
+  }).required(),
 });
 
 const Product_OrderSchema = Joi.object().keys({

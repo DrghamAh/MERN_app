@@ -19,8 +19,13 @@ const ProductSchema = new Schema({
   },
   category_id : {
     type : String,
-  }
-
+  },
+  Orders : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'Order',
+    }
+  ],
 });
 
 const Product = mongoose.model('Product', ProductSchema);

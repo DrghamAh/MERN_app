@@ -29,6 +29,7 @@ const register = asyncHandler(async (req, res) => {
         email : response.email,
         phone : response.phone,
         role : response.role,
+        favorites : response.favorites,
       }, 'usersecretkey'),
     });
   } else {
@@ -49,7 +50,8 @@ const login = asyncHandler(async (req, res) => {
           email : user.email,
           phone : user.phone,
           role : user.role,
-        }, user.role == 1 ? 'usersecretkey' : 'adminsecretkey'),
+          favorites : user.favorites
+        }, 'usersecretkey'),
       });
     } else {
       res.status(400).json({
